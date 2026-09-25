@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "www.sankavollerei.web.id" },
       { protocol: "https", hostname: "*.shngm.id" },
     ],
+    // Allow all local images (including our /api/image proxy, which always
+    // carries a ?url= query string). Defining localPatterns allowlists, so
+    // this catch-all preserves the default permissiveness for local files.
+    localPatterns: [{ pathname: "**", search: "**" }],
   },
 };
 
