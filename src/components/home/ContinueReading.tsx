@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { CoverImage } from "@/components/ui/CoverImage";
 import { useProgress } from "@/lib/store/progress";
 
 function formatMangaTitle(title?: string | null, mangaId?: string): string {
@@ -44,16 +44,7 @@ export function ContinueReading() {
               }`}
             >
               <div className="relative w-10 h-14 overflow-hidden rounded bg-surface-elevated shrink-0">
-                {p.cover ? (
-                  <Image
-                    src={p.cover}
-                    alt=""
-                    fill
-                    sizes="40px"
-                    className="object-cover"
-                    loading="lazy"
-                  />
-                ) : null}
+                <CoverImage src={p.cover} alt={`Cover ${title}`} sizes="40px" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-medium line-clamp-1">{title}</p>

@@ -25,6 +25,7 @@ export function ReaderImage({ src, alt, index }: { src: string; alt: string; ind
         height={1200}
         sizes="(max-width: 900px) 100vw, 900px"
         loading={index < 2 ? "eager" : "lazy"}
+        referrerPolicy="no-referrer"
         priority={index === 0}
         onLoad={() => setLoaded(true)}
         onError={() => setFailed(true)}

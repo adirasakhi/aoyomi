@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Chapter } from "@/types/manga";
+import { formatDateID } from "@/lib/utils";
 import { useProgress } from "@/lib/store/progress";
 
 export function ChapterList({ chapters, mangaId }: { chapters: Chapter[]; mangaId: string }) {
@@ -28,7 +29,9 @@ export function ChapterList({ chapters, mangaId }: { chapters: Chapter[]; mangaI
               {c.chapterTitle ? (
                 <span className="text-meta line-clamp-1">{c.chapterTitle}</span>
               ) : null}
-              <span className="ml-auto text-micro">{c.releaseDate ?? ""}</span>
+              {formatDateID(c.releaseDate) ? (
+                <span className="ml-auto text-micro shrink-0">{formatDateID(c.releaseDate)}</span>
+              ) : null}
             </Link>
           </li>
         );

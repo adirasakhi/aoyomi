@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import type { SliderItem } from "@/types/manga";
 import { Badge } from "@/components/ui/Badge";
+import { CoverImage } from "@/components/ui/CoverImage";
 
 const AUTOPLAY_MS = 6000;
 
@@ -57,6 +58,7 @@ export function HeroSlider({ items }: { items: SliderItem[] }) {
             priority={i === 0}
             loading={i === 0 ? "eager" : "lazy"}
             sizes="100vw"
+            referrerPolicy="no-referrer"
             className={`object-cover transition-opacity duration-500 ${
               i === index % count ? "opacity-40" : "opacity-0"
             }`}
@@ -128,13 +130,10 @@ export function HeroSlider({ items }: { items: SliderItem[] }) {
           </div>
           {active.charaImage ? (
             <div className="relative hidden md:block w-44 h-64 shrink-0 rounded-lg overflow-hidden border border-border">
-              <Image
+              <CoverImage
                 src={active.charaImage}
                 alt={`Karakter ${active.title}`}
-                fill
                 sizes="176px"
-                className="object-cover"
-                loading="lazy"
               />
             </div>
           ) : null}

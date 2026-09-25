@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { CoverImage } from "@/components/ui/CoverImage";
 import { useBookmarks } from "@/lib/store/bookmarks";
 import { EmptyState } from "@/components/ui/States";
 
@@ -20,9 +20,7 @@ export function BookmarkList() {
         <div key={b.mangaId} className="card p-3">
           <Link href={`/manga/${b.mangaId}`} className="block" aria-label={`Buka ${b.title}`}>
             <div className="relative aspect-[5/7] overflow-hidden rounded-md bg-surface-elevated">
-              {b.cover ? (
-                <Image src={b.cover} alt={`Cover ${b.title}`} fill sizes="25vw" className="object-cover" loading="lazy" />
-              ) : null}
+              <CoverImage src={b.cover} alt={`Cover ${b.title}`} sizes="25vw" />
             </div>
             <p className="mt-3 font-medium line-clamp-1">{b.title}</p>
           </Link>

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Manga } from "@/types/manga";
+import { CoverImage } from "@/components/ui/CoverImage";
 
 export type CardVariant = "standard" | "spotlight" | "ranked";
 
@@ -30,16 +30,7 @@ export function MangaCard({
         aria-label={`Buka ${manga.title}`}
       >
         <div className="relative w-24 aspect-[5/7] overflow-hidden rounded-md bg-surface-elevated shrink-0">
-          {manga.cover ? (
-            <Image
-              src={manga.cover}
-              alt={`Cover ${manga.title}`}
-              fill
-              sizes="96px"
-              className="object-cover"
-              loading="lazy"
-            />
-          ) : null}
+          <CoverImage src={manga.cover} alt={`Cover ${manga.title}`} sizes="96px" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-medium line-clamp-1 text-base">{manga.title}</p>
@@ -70,16 +61,7 @@ export function MangaCard({
           </span>
         ) : null}
         <div className="relative w-12 h-[68px] overflow-hidden rounded bg-surface-elevated shrink-0">
-          {manga.cover ? (
-            <Image
-              src={manga.cover}
-              alt={`Cover ${manga.title}`}
-              fill
-              sizes="48px"
-              className="object-cover"
-              loading="lazy"
-            />
-          ) : null}
+          <CoverImage src={manga.cover} alt={`Cover ${manga.title}`} sizes="48px" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-medium line-clamp-1">{manga.title}</p>
@@ -96,16 +78,11 @@ export function MangaCard({
       aria-label={`Buka ${manga.title}`}
     >
       <div className="relative aspect-[5/7] overflow-hidden rounded-md bg-surface-elevated">
-        {manga.cover ? (
-          <Image
-            src={manga.cover}
-            alt={`Cover ${manga.title}`}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-            className="object-cover"
-            loading="lazy"
-          />
-        ) : null}
+        <CoverImage
+          src={manga.cover}
+          alt={`Cover ${manga.title}`}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+        />
       </div>
       <p className="mt-3 font-medium line-clamp-1">{manga.title}</p>
       <Meta manga={manga} />

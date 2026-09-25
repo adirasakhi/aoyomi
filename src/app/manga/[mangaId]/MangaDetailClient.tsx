@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useMemo } from "react";
 import { Header, Footer, MobileNav } from "@/components/layout/Chrome";
+import { CoverImage } from "@/components/ui/CoverImage";
 import { ChapterList } from "@/components/manga/ChapterList";
 import { BookmarkButton } from "@/components/manga/BookmarkButton";
 import { Badge } from "@/components/ui/Badge";
@@ -55,16 +55,12 @@ export function MangaDetailView({ mangaId }: { mangaId: string }) {
         ) : (
           <div className="flex flex-col md:flex-row gap-5">
             <div className="relative w-36 md:w-48 aspect-[5/7] overflow-hidden rounded-lg border border-border shrink-0">
-              {detail.data.data.cover ? (
-                <Image
-                  src={detail.data.data.cover}
-                  alt={`Cover ${detail.data.data.title}`}
-                  fill
-                  sizes="200px"
-                  className="object-cover"
-                  priority
-                />
-              ) : null}
+              <CoverImage
+                src={detail.data.data.cover}
+                alt={`Cover ${detail.data.data.title}`}
+                sizes="200px"
+                eager
+              />
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-h1 line-clamp-2">{detail.data.data.title}</h1>
