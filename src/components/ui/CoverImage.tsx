@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { proxied } from "@/lib/images";
 
 // Cover with honest fallback (R-23): initial letter on surface instead of
 // a broken image box. Parent must be relative; this fills it absolutely.
@@ -20,7 +21,8 @@ export function CoverImage({
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
-  if (!src || failed) {
+  const finalSrc = proxied(src);
+  if (!finalSrc || failed) {
     const initial = (alt.replace(/^Cover /, "").trim().charAt(0) || "?").toUpperCase();
     return (
       <div
@@ -39,7 +41,7 @@ export function CoverImage({
   }
   return (
     <Image
-      src={src}
+      src={finalSrc}
       alt={alt}
       fill
       sizes={sizes}

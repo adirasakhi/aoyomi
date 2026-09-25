@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import type { SliderItem } from "@/types/manga";
 import { Badge } from "@/components/ui/Badge";
 import { CoverImage } from "@/components/ui/CoverImage";
+import { proxied } from "@/lib/images";
 
 const AUTOPLAY_MS = 6000;
 
@@ -48,22 +49,26 @@ export function HeroSlider({ items }: { items: SliderItem[] }) {
       }}
     >
       <div className="relative h-[340px] md:h-[420px]">
-        {items.map((s, i) => (
-          <Image
-            key={s.id || `${s.mangaId}-${i}`}
-            src={s.backgroundImage}
-            alt=""
-            aria-hidden={i !== index}
-            fill
-            priority={i === 0}
-            loading={i === 0 ? "eager" : "lazy"}
-            sizes="100vw"
-            referrerPolicy="no-referrer"
-            className={`object-cover transition-opacity duration-500 ${
-              i === index % count ? "opacity-40" : "opacity-0"
-            }`}
-          />
-        ))}
+        {items.map((s, i) => {
+          const bg = proxied(s.backgroundImage);
+          if (!bg) return null;
+          return (
+            <Image
+              key={s.id || `${s.mangaId}-${i}`}
+              src={bg}
+              alt=""
+              aria-hidden={i !== index}
+              fill
+              priority={i === 0}
+              loading={i === 0 ? "eager" : "lazy"}
+              sizes="100vw"
+              referrerPolicy="no-referrer"
+              className={`object-cover transition-opacity duration-500 ${
+                i === index % count ? "opacity-40" : "opacity-0"
+              }`}
+            />
+          );
+        })}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
         <div className="absolute inset-x-0 bottom-0 p-5 md:p-8 flex gap-5 md:items-end">
