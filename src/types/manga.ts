@@ -49,6 +49,11 @@ export interface MangaDetail extends Omit<Manga, "latestChapter"> {
   categories?: string[];
   createdAt?: string;
   updatedAt?: string;
+  firstChapter?: {
+    chapterId: string;
+    chapterNumber: number;
+    updatedAt?: string;
+  };
   latestChapter?: {
     chapterId: string;
     chapterNumber: number;

@@ -20,6 +20,11 @@ export async function mockDetail(mangaId: string): Promise<DetailResponse> {
       createdAt: "2022-01-10T00:00:00Z",
       updatedAt: found.latestChapterTime ?? undefined,
       latestChapterNumber: latestChapter ?? null,
+      firstChapter: {
+        chapterId: `ch-${mangaId}-1`,
+        chapterNumber: 1,
+        updatedAt: "2022-01-10T00:00:00Z",
+      },
       latestChapter: found.latestChapterId
         ? {
             chapterId: found.latestChapterId,

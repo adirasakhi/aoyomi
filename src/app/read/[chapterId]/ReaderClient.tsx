@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowUp, ListOrdered, BookOpen } from "lucide-react";
 import { Header, MobileNav } from "@/components/layout/Chrome";
 import { ReaderImage } from "@/components/reader/ReaderImage";
 import { ReaderNav } from "@/components/reader/ReaderNav";
@@ -25,6 +26,7 @@ export function ReaderView({ chapterId }: { chapterId: string }) {
   const sentinel = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const mangaTitle = detailQuery.data?.data.title ?? query.data?.data.mangaTitle;
   const mangaCover =
@@ -36,6 +38,15 @@ export function ReaderView({ chapterId }: { chapterId: string }) {
   const images = query.data?.data.images ?? [];
   const total = query.data?.data.totalImages ?? 0;
   const pct = total > 0 ? Math.min(100, Math.round(((activeIndex + 1) / total) * 100)) : 0;
+
+  // Track scroll position for floating back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Persist the opened chapter. Remounted per chapter via key, so index starts at 0.
   useEffect(() => {
@@ -114,6 +125,13 @@ export function ReaderView({ chapterId }: { chapterId: string }) {
     });
   }, []);
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+    });
+  };
+
   // Keyboard: arrows move between pages. Ignored while typing in a field.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -142,45 +160,66 @@ export function ReaderView({ chapterId }: { chapterId: string }) {
   return (
     <>
       <Header />
-      <main className="reader-container pb-24 md:pb-12 flex-1 w-full">
+      <main className="reader-container pb-28 md:pb-12 flex-1 w-full relative">
         {query.isPending ? (
           <div className="space-y-4" aria-label="Memuat chapter">
-            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-10 w-1/2 rounded-xl" />
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="w-full aspect-[2/3]" />
+              <Skeleton key={i} className="w-full aspect-[2/3] rounded-2xl" />
             ))}
           </div>
         ) : query.isError ? (
           <ErrorState message="Chapter tidak ditemukan." onRetry={() => query.refetch()} />
         ) : (
           <>
-            <div className="sticky top-[57px] z-[100] bg-background/95 backdrop-blur border-b border-border -mx-4 px-4 py-3 mb-4">
+            {/* Sticky Floating Reader HUD */}
+            <div className="sticky top-[53px] md:top-[57px] z-[100] bg-background/90 backdrop-blur-xl border-b border-border/80 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2.5 mb-4 shadow-lg">
               <div className="flex items-center gap-3">
-                <Link href={`/manga/${query.data.data.mangaId}`} className="btn btn-ghost tap-target px-2" aria-label="Kembali ke daftar chapter">
-                  ←
+                <Link
+                  href={`/manga/${query.data.data.mangaId}`}
+                  className="btn btn-ghost tap-target p-2 text-text-secondary hover:text-primary rounded-xl"
+                  aria-label="Kembali ke daftar chapter"
+                >
+                  <ArrowLeft size={18} />
                 </Link>
+
                 <div className="min-w-0 flex-1">
                   {mangaTitle ? (
-                    <p className="text-micro text-text-secondary line-clamp-1">{mangaTitle}</p>
+                    <p className="text-micro text-text-muted line-clamp-1 font-medium">
+                      {mangaTitle}
+                    </p>
                   ) : null}
-                  <h1 className="text-h2 text-mono">Ch {query.data.data.chapterNumber}</h1>
+                  <h1 className="text-sm sm:text-base font-bold font-mono text-text-primary">
+                    Chapter {query.data.data.chapterNumber}
+                    {query.data.data.chapterTitle ? ` - ${query.data.data.chapterTitle}` : ""}
+                  </h1>
                 </div>
-                <span className="text-micro ml-auto shrink-0" aria-live="polite">
-                  {activeIndex + 1} / {query.data.data.totalImages}
-                </span>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="badge badge-glass font-mono text-xs font-bold text-sky-400" aria-live="polite">
+                    {activeIndex + 1} / {query.data.data.totalImages}
+                  </span>
+                </div>
               </div>
+
+              {/* Glowing Reading Progress Line */}
               <div
-                className="h-1 bg-surface rounded-full mt-2 overflow-hidden"
+                className="h-1 bg-surface-elevated rounded-full mt-2 overflow-hidden"
                 role="progressbar"
                 aria-valuenow={pct}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label={`Progress membaca ${pct} persen`}
               >
-                <div className="h-full bg-primary transition-[width]" style={{ width: `${pct}%` }} />
+                <div
+                  className="h-full bg-gradient-to-r from-sky-400 to-indigo-500 rounded-full shadow-[0_0_8px_#38BDF8] transition-all duration-300"
+                  style={{ width: `${pct}%` }}
+                />
               </div>
             </div>
-            <div className="space-y-2">
+
+            {/* Reader Image Stack */}
+            <div className="space-y-2 select-none">
               {images.map((src, i) => (
                 <div
                   key={`${src}-${i}`}
@@ -188,16 +227,38 @@ export function ReaderView({ chapterId }: { chapterId: string }) {
                   ref={(el) => {
                     pageRefs.current[i] = el;
                   }}
+                  className="overflow-hidden rounded-lg sm:rounded-xl shadow-md bg-surface"
                 >
-                  <ReaderImage src={src} alt={`Halaman ${i + 1} chapter ${query.data.data.chapterNumber}`} index={i} />
+                  <ReaderImage
+                    src={src}
+                    alt={`Halaman ${i + 1} chapter ${query.data.data.chapterNumber}`}
+                    index={i}
+                  />
                 </div>
               ))}
             </div>
+
+            {/* Sentinel for Completion */}
             <div ref={sentinel} aria-hidden className="h-px" />
+
+            {/* Bottom Navigation */}
             <ReaderNav chapter={query.data.data} mangaId={query.data.data.mangaId} />
-            <p className="text-micro mt-4 text-center">
-              Tips: tombol panah atas/bawah pindah halaman.
+
+            <p className="text-micro text-text-muted mt-4 text-center font-mono">
+              Tips: Gunakan tombol panah keyboard atau swipe untuk berpindah halaman.
             </p>
+
+            {/* Floating Back to Top Button */}
+            {showScrollTop && (
+              <button
+                type="button"
+                onClick={scrollToTop}
+                className="fixed bottom-20 right-4 md:bottom-8 md:right-8 z-[150] w-11 h-11 rounded-full bg-primary/90 hover:bg-primary text-background flex items-center justify-center shadow-lg shadow-primary/30 transition-all duration-200 animate-in fade-in zoom-in-75"
+                aria-label="Kembali ke atas"
+              >
+                <ArrowUp size={20} strokeWidth={2.5} />
+              </button>
+            )}
           </>
         )}
       </main>
@@ -205,3 +266,4 @@ export function ReaderView({ chapterId }: { chapterId: string }) {
     </>
   );
 }
+

@@ -142,6 +142,9 @@ export function mapMangaDetail(m: unknown): MangaDetail {
   const rawLatest = pick(o, "latestChapter", "latest_chapter");
   const latestObj =
     rawLatest && typeof rawLatest === "object" ? (rawLatest as Raw) : null;
+  const rawFirst = pick(o, "firstChapter", "first_chapter");
+  const firstObj =
+    rawFirst && typeof rawFirst === "object" ? (rawFirst as Raw) : null;
   return {
     ...base,
     rank: primitiveNum(pick(o, "rank", "rank")) ?? undefined,
@@ -150,6 +153,14 @@ export function mapMangaDetail(m: unknown): MangaDetail {
     ),
     createdAt: str(pick(o, "createdAt", "created_at")) ?? undefined,
     updatedAt: str(pick(o, "updatedAt", "updated_at")) ?? undefined,
+    firstChapter: firstObj
+      ? {
+          chapterId: str(pick(firstObj, "chapterId", "chapter_id")) ?? "",
+          chapterNumber:
+            primitiveNum(pick(firstObj, "chapterNumber", "chapter_number")) ?? 1,
+          updatedAt: str(pick(firstObj, "updatedAt", "updated_at")) ?? undefined,
+        }
+      : undefined,
     latestChapterNumber:
       primitiveNum(rawLatest) ??
       (latestObj
